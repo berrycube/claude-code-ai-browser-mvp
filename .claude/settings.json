@@ -1,0 +1,37 @@
+{
+  "permissionMode": "ask",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp.*playwright.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node packages/hooks/dist/pretool-guard.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp.*playwright.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node packages/hooks/dist/posttool-detect.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node packages/hooks/dist/stop-checkpoint.js"
+          }
+        ]
+      }
+    ]
+  }
+}

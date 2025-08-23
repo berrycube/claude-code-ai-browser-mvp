@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "actions": {
+    "deny_domains": [
+      ".onion"
+    ],
+    "ask_patterns": [
+      "login",
+      "signin",
+      "checkout",
+      "subscribe",
+      "paywall",
+      "captcha",
+      "验证码",
+      "登录",
+      "付费"
+    ],
+    "pause_keywords": [
+      "captcha",
+      "not a robot",
+      "subscribe",
+      "paywall",
+      "验证码",
+      "登录",
+      "付费"
+    ],
+    "snapshot_pdf_domains": [
+      "gov",
+      "edu",
+      "who.int",
+      "oecd.org"
+    ]
+  }
+}

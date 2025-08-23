@@ -1,0 +1,62 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--browser",
+        "chrome",
+        "--caps",
+        "pdf"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${workspaceFolder}"
+      ]
+    },
+    "research-tools": {
+      "command": "node",
+      "args": [
+        "packages/mcp-research-tools/dist/index.js"
+      ]
+    },
+    "serpapi": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@ilyazub/serpapi-mcp-server"
+      ],
+      "env": {
+        "SERPAPI_API_KEY": "${env:SERPAPI_API_KEY}"
+      },
+      "optional": true
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${env:BRAVE_API_KEY}"
+      },
+      "optional": true
+    },
+    "qdrant": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-qdrant"
+      ],
+      "env": {
+        "COLLECTION_NAME": "research-memory",
+        "EMBEDDING_MODEL": "sentence-transformers/all-MiniLM-L6-v2",
+        "QDRANT_LOCAL_PATH": "${workspaceFolder}/workspace/qdrant"
+      },
+      "optional": true
+    }
+  }
+}

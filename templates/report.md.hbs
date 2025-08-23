@@ -1,0 +1,33 @@
+# 研究主题：{{topic}}
+- 日期：{{date}}
+- 范围：{{langs}}｜时间窗：{{since}}–{{until}}
+- 结论级别：{{confidence}}
+
+## 关键结论
+{{#each key_findings}}
+1. {{this.point}}  
+   依据：{{#each this.sources}}[{{this.id}}]({{this.url}})（{{this.time}}）{{#if this.snapshot}} · 快照：{{this.snapshot}}{{/if}}{{/each}}
+{{/each}}
+
+## 证据矩阵
+{{#each evidence}}
+- **{{this.claim}}**  
+  支持：{{#each this.support}}[{{this.id}}]({{this.url}}){{/each}}  
+  反对/冲突：{{#each this.counter}}[{{this.id}}]({{this.url}}){{/each}}
+{{/each}}
+
+## 风险与不确定性
+{{#each risks}}
+- {{this}}
+{{/each}}
+
+## 决策建议
+{{#each recommendations}}
+- **{{this.option}}**：利 {{this.pros}} ｜ 弊 {{this.cons}} ｜ 条件 {{this.conditions}} ｜ 风险 {{this.risks}}
+{{/each}}
+
+## 方法与复核
+- 计划：{{plan_ref}}；审计：`workspace/scratch/audit.json`
+- 来源：`workspace/sources/normalized.jsonl`（快照见 snapshots/）
+- 偏好：`workspace/scratch/human_prefs.json`
+- 仪表盘：{{dashboard_path}}

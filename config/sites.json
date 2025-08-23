@@ -1,0 +1,19 @@
+{
+  "whitelist": [
+    "wikipedia.org",
+    "github.com",
+    "zhihu.com",
+    "bilibili.com",
+    "quora.com",
+    "medium.com",
+    "youtube.com"
+  ],
+  "graylist": [
+    "reddit.com",
+    "x.com",
+    "weibo.com"
+  ],
+  "blacklist": [
+    ".onion"
+  ]
+}

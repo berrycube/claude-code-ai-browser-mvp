@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{topic}} — Dashboard</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #eee; padding: 6px 8px; text-align: left; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #f2f2f2; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <h1>{{topic}} — Dashboard</h1>
+  <p>时间窗：{{since}}–{{until}} ｜ 语言：{{langs}} ｜ 生成：{{date}}</p>
+  <div class="grid">
+    <div class="card"><h3>来源分布</h3><ul>{{#each stats.by_source}}<li>{{@key}}：{{this}}</li>{{/each}}</ul></div>
+    <div class="card"><h3>质量评分</h3><ul>{{#each stats.by_quality_bucket}}<li>{{@key}}：{{this}}</li>{{/each}}</ul></div>
+    <div class="card"><h3>最近 14 天新增</h3><p>{{stats.recent_14d}} 条</p></div>
+    <div class="card"><h3>Top 10 主题词</h3>{{#each stats.top_terms}}<span class="pill">{{this.term}} ({{this.count}})</span>{{/each}}</div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>样本明细（前 50 条）</h3>
+    <table><thead><tr><th>标题</th><th>来源</th><th>时间</th><th>质量</th><th>链接</th></tr></thead>
+    <tbody>{{#each samples}}<tr><td>{{this.title}}</td><td>{{this.source}}</td><td>{{this.time}}</td><td>{{this.quality}}</td><td><a href="{{this.url}}" target="_blank">打开</a></td></tr>{{/each}}</tbody>
+    </table>
+  </div>
+</body>
+</html>

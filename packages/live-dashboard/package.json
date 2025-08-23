@@ -1,0 +1,13 @@
+{
+  "name": "live-dashboard",
+  "version": "0.1.1",
+  "type": "module",
+  "main": "dist/server.js",
+  "types": "dist/server.d.ts",
+  "scripts": {
+    "build": "tsup src/server.ts --format esm,cjs",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {}
+}

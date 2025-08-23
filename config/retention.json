@@ -1,0 +1,6 @@
+{
+  "snapshots_days": 90,
+  "traces_days": 14,
+  "sources_days": 365,
+  "reports_days": 730
+}
