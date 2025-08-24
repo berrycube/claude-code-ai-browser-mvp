@@ -31,8 +31,29 @@ export class SearcherAgent extends Agent {
   }
   
   private async performSearch(query: string, options: any): Promise<any[]> {
-    // TODO: 集成真实的搜索API (SerpApi/Brave Search)
-    // 现在返回模拟数据
+    // 尝试使用真实的搜索API
+    try {
+      // 优先使用Brave Search MCP（如果已配置）
+      const braveResults = await this.searchWithBrave(query);
+      if (braveResults.length > 0) {
+        return braveResults;
+      }
+    } catch (error) {
+      this.log(`Brave Search失败: ${error}`);
+    }
+
+    try {
+      // 备选方案：SerpApi（如果已配置）
+      const serpResults = await this.searchWithSerp(query);
+      if (serpResults.length > 0) {
+        return serpResults;
+      }
+    } catch (error) {
+      this.log(`SerpApi搜索失败: ${error}`);
+    }
+
+    // 降级到模拟数据
+    this.log(`使用模拟搜索数据: ${query}`);
     return [
       {
         id: `search-${Date.now()}-${Math.random()}`,
@@ -45,6 +66,22 @@ export class SearcherAgent extends Agent {
         relevance_score: Math.random() * 0.4 + 0.6 // 0.6-1.0
       }
     ];
+  }
+
+  private async searchWithBrave(query: string): Promise<any[]> {
+    // TODO: 实际调用Brave Search MCP
+    // await this.callMCP('brave-search', 'brave_web_search', { query });
+    
+    // 模拟调用失败，降级到模拟数据
+    throw new Error('Brave Search MCP未配置或不可用');
+  }
+
+  private async searchWithSerp(query: string): Promise<any[]> {
+    // TODO: 实际调用SerpApi MCP
+    // await this.callMCP('serpapi', 'search', { query });
+    
+    // 模拟调用失败，降级到模拟数据
+    throw new Error('SerpApi MCP未配置或不可用');
   }
   
   private deduplicateAndRank(sources: any[]): any[] {
