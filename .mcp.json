@@ -21,7 +21,7 @@
     "research-tools": {
       "command": "node",
       "args": [
-        "packages/mcp-research-tools/dist/index.js"
+        "${workspaceFolder}/packages/mcp-research-tools/dist/index.js"
       ]
     },
     "serpapi": {

@@ -11,6 +11,7 @@ import type { SourceRecord } from "../../types/src/index.js";
 let dbOk = false; 
 let db: BetterSqlite3Database | null = null;
 let Database: BetterSqlite3Constructor | null = null;
+let lastDbWarning = 0; // 节流机制：避免重复警告
 
 async function getDbPath() { const p = path.join(process.cwd(), "workspace","db"); await fs.mkdir(p,{recursive:true}); return path.join(p,"research.db"); }
 
@@ -41,7 +42,15 @@ export async function ensureDb(): Promise<boolean> {
 }
 function hash(s:string){ let h=0; for(let i=0;i<s.length;i++){ h=(h<<5)-h+s.charCodeAt(i); h|=0; } return String(h>>>0); }
 export async function insertSource(rec: SourceRecord): Promise<string|null> {
-  if (!dbOk || !db) return null;
+  if (!dbOk || !db) {
+    // 节流的友好降级提示，避免重复警告（每分钟最多一次）
+    const now = Date.now();
+    if (now - lastDbWarning > 60000) {
+      logger.warn('SQLite database unavailable, records will not be persisted (functionality intact, but data not saved to disk)');
+      lastDbWarning = now;
+    }
+    return null;
+  }
   const id = rec.id || (rec.url||"")+"#"+(rec.title||"").slice(0,32);
   const h = hash((rec.url||"")+(rec.title||"")+(rec.content_text||"").slice(0,500));
   const ins = db.prepare(`INSERT OR IGNORE INTO sources (id,url,host,title,author,lang,published_at,extracted_at,snapshot_path,quality_score,quality_labels,content_hash) VALUES (@id,@url,@host,@title,@author,@lang,@published_at,@extracted_at,@snapshot_path,@quality_score,@quality_labels,@content_hash)`);
