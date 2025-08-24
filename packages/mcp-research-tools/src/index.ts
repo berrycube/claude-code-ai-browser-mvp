@@ -8,7 +8,6 @@ import Handlebars from "handlebars";
 import pino from "pino";
 import { z } from "zod";
 import { ensureDb, insertSource } from "./db.js";
-import { createResearchMachine } from "./state/research.machine.js";
 
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 const server = new McpServer({ name: "research-tools", version: "0.2.1" });
@@ -32,9 +31,9 @@ server.registerTool(
   { 
     title: "Extract", 
     description: "Extract readable content from HTML", 
-    inputSchema: ExtractInput as any 
+    inputSchema: ExtractInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof ExtractInput>) => {
     const { html, url } = ExtractInput.parse(args);
     const dom = new JSDOM(html, { url: url || "https://example.com" });
     const reader = new Readability(dom.window.document);
@@ -66,9 +65,9 @@ server.registerTool(
   { 
     title: "Normalize", 
     description: "Normalize fields (lang/time/host/keywords)", 
-    inputSchema: NormalizeInput as any 
+    inputSchema: NormalizeInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof NormalizeInput>) => {
     const { item } = NormalizeInput.parse(args);
     const u = item.url ? new URL(item.url) : null;
     const host = u ? u.hostname.replace(/^www\./,"") : "";
@@ -103,9 +102,9 @@ server.registerTool(
   { 
     title: "Quality", 
     description: "Heuristic quality scoring", 
-    inputSchema: QualityInput as any 
+    inputSchema: QualityInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof QualityInput>) => {
     const { item } = QualityInput.parse(args);
     const url = String(item.url || "");
     const text = String(item.content_text || item.text || "").toLowerCase();
@@ -160,9 +159,9 @@ server.registerTool(
   { 
     title: "Report", 
     description: "Render report.md.hbs to path", 
-    inputSchema: ReportInput as any 
+    inputSchema: ReportInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof ReportInput>) => {
     const { path: outPath, context } = ReportInput.parse(args);
     const templatePath = joinCwd("templates","report.md.hbs");
     const templateContent = await fs.readFile(templatePath, "utf8");
@@ -193,9 +192,9 @@ server.registerTool(
   { 
     title: "Dashboard", 
     description: "Render dashboard.html.hbs to path", 
-    inputSchema: DashInput as any 
+    inputSchema: DashInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof DashInput>) => {
     const { path: outPath, context } = DashInput.parse(args);
     const templatePath = joinCwd("templates","dashboard.html.hbs");
     const templateContent = await fs.readFile(templatePath, "utf8");
@@ -239,9 +238,9 @@ server.registerTool(
   { 
     title: "Insert source", 
     description: "Insert normalized source into DB", 
-    inputSchema: InsertInput as any 
+    inputSchema: InsertInput.shape 
   }, 
-  async (args: { [x: string]: any; }) => {
+  async (args: z.infer<typeof InsertInput>) => {
     const { record } = InsertInput.parse(args);
     const id = await insertSource(record);
     

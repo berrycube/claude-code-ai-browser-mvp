@@ -1,8 +1,19 @@
 export interface SourceRecord {
-  id: string; url: string; host: string; title: string;
-  author?: string; lang?: string; published_at?: string; extracted_at?: string;
-  snapshot_path?: string; quality?: { score: number; labels: string[] };
-  keywords?: string[]; content_text?: string;
+  id?: string; 
+  url?: string; 
+  host?: string; 
+  title?: string;
+  author?: string; 
+  lang?: string; 
+  published_at?: string; 
+  extracted_at?: string;
+  snapshot_path?: string; 
+  content_text?: string;
+  quality?: { 
+    score?: number; 
+    labels?: string[] 
+  };
+  keywords?: string[];
 }
 export interface Plan {
   topic: string;

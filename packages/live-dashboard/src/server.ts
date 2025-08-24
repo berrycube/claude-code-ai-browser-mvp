@@ -2,6 +2,9 @@ import * as http from "node:http";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as url from "node:url";
+import pino from "pino";
+
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
 const PORT = Number(process.env.PORT || 7788);
 const ROOT = process.cwd();
@@ -77,7 +80,7 @@ const server = http.createServer((req, res) => {
 
 // Start server
 server.listen(PORT, () => {
-  console.log(`Live dashboard running on http://localhost:${PORT}`);
+  logger.info({ port: PORT }, "Live dashboard running");
 });
 
 export default server;

@@ -14,8 +14,7 @@
     "handlebars": "^4.7.8",
     "jsdom": "^24.1.0",
     "pino": "^9.3.2",
-    "zod": "^3.23.8",
-    "xstate": "^5.13.2"
+    "zod": "^3.23.8"
   },
   "optionalDependencies": {
     "better-sqlite3": "^9.4.0"

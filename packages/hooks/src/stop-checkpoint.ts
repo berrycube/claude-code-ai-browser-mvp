@@ -1,1 +1,8 @@
-async function main(){ console.log(JSON.stringify({ message: "到达检查点：请确认计划/证据/取舍后继续（/resume 或给出指示）。" })); } main();
+// Backward compatibility wrapper for stop-checkpoint
+import { executeStopCheckpoint } from "./index.js";
+
+async function main() {
+  await executeStopCheckpoint();
+}
+
+main();

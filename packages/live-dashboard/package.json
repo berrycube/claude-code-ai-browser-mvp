@@ -9,7 +9,9 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "pino": "^9.3.2"
+  },
   "devDependencies": {
     "@types/node": "^20.14.0"
   }
