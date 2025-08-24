@@ -39,3 +39,19 @@ export interface ReportContext {
   recommendations: { option: string; pros: string; cons: string; conditions?: string; risks?: string }[];
   plan_ref?: string; dashboard_path?: string;
 }
+
+// 新增工作流相关类型
+export interface ResearchOptions {
+  langs: string[];
+  depth: number;
+  since: string;
+}
+
+export interface WorkflowResult {
+  success: boolean;
+  topic: string;
+  reportPath: string;
+  sourcesCount: number;
+  duration: number;
+}
+

@@ -1,34 +1,18 @@
 {
-  "version": "1.0",
   "actions": {
     "deny_domains": [
-      ".onion"
+      "malicious.com"
     ],
     "ask_patterns": [
       "login",
-      "signin",
-      "checkout",
-      "subscribe",
-      "paywall",
-      "captcha",
-      "验证码",
-      "登录",
-      "付费"
+      "password"
     ],
     "pause_keywords": [
-      "captcha",
-      "not a robot",
-      "subscribe",
-      "paywall",
       "验证码",
-      "登录",
-      "付费"
+      "登录"
     ],
     "snapshot_pdf_domains": [
-      "gov",
-      "edu",
-      "who.int",
-      "oecd.org"
+      "reports.com"
     ]
   }
 }

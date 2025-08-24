@@ -4,12 +4,22 @@
   "version": "2.1.0",
   "type": "module",
   "packageManager": "pnpm@9.7.0",
+  "bin": {
+    "ai-research": "./dist/cli.js"
+  },
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r build && tsup src/cli.ts --format esm --outDir dist",
     "dev": "pnpm -r dev",
     "start:live": "pnpm --filter live-dashboard start",
     "type-check": "pnpm -r exec tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "research": "tsx src/cli.ts research",
+    "dashboard": "tsx src/cli.ts dashboard",
+    "memorize": "tsx src/cli.ts memorize",
+    "remember": "tsx src/cli.ts remember"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
   },
   "devDependencies": {
     "eslint": "^9.8.0",
