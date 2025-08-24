@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Generated files
+src/**/*.js
+src/**/*.d.ts
+*.generated.*
+
+# Workspace data (contains generated reports)
+workspace/
+
+# Templates (Handlebars syntax)
+templates/
+
+# Config files
+*.config.js
+*.config.mjs

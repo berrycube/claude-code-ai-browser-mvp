@@ -98,6 +98,7 @@ jspm_packages/
 # Project specific
 workspace/
 *.sqlite
+*.sqlite3
 *.db
 
 # Temporary files
@@ -111,6 +112,12 @@ workspace/reports/
 workspace/snapshots/
 workspace/runs/
 workspace/qdrant/
+workspace/db/
+
+# Generated files
+src/**/*.js
+src/**/*.d.ts
+*.generated.*
 
 # Local Claude settings
 .claude/settings.local.json

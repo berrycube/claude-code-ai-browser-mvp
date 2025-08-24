@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+.nuxt/
+
+# Generated files
+src/**/*.js
+src/**/*.d.ts
+*.generated.*
+
+# Package files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Workspace data
+workspace/
+
+# Templates
+templates/
+
+# Logs
+*.log
+
+# Config files
+*.config.js
+*.config.mjs
