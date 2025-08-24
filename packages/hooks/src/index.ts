@@ -31,6 +31,8 @@ export async function executePreToolGuard(): Promise<void> {
   const policy = loadPolicy();
   
   if (!data.success) {
+    // Note: console.log is intentional - this outputs to MCP tool stdout
+    // Do not replace with logger as it would break the MCP protocol
     return console.log(JSON.stringify({ 
       permissionDecision:"ask", 
       reason:"bad input" 
@@ -42,6 +44,7 @@ export async function executePreToolGuard(): Promise<void> {
   const ask = policy.actions?.ask_patterns||[];
   
   if (deny.some((d:string)=> url.includes(d))) {
+    // Note: console.log is intentional - MCP protocol output
     return console.log(JSON.stringify({ 
       permissionDecision:"deny", 
       reason:"blocked domain" 
@@ -49,12 +52,14 @@ export async function executePreToolGuard(): Promise<void> {
   }
   
   if (ask.some((p:string)=> new RegExp(p,'i').test(url))) {
+    // Note: console.log is intentional - MCP protocol output
     return console.log(JSON.stringify({ 
       permissionDecision:"ask", 
       reason:"sensitive pattern" 
     }));
   }
   
+  // Note: console.log is intentional - MCP protocol output
   console.log(JSON.stringify({ 
     permissionDecision:"allow", 
     reason:"ok" 
@@ -76,17 +81,20 @@ export async function executePostToolDetect(): Promise<void> {
   const pause: string[] = policy.actions?.pause_keywords || [];
   
   if (pause.some((kw:string)=> combined.includes(kw.toLowerCase()))) {
+    // Note: console.log is intentional - MCP protocol output
     return console.log(JSON.stringify({ 
       decision:"pause_for_human", 
       reason:"可能遇到登录/付费墙/验证码" 
     }));
   }
   
+  // Note: console.log is intentional - MCP protocol output
   console.log(JSON.stringify({ decision:"ok" }));
 }
 
 // Stop checkpoint logic
 export async function executeStopCheckpoint(): Promise<void> { 
+  // Note: console.log is intentional - MCP protocol output
   console.log(JSON.stringify({ 
     message: "到达检查点：请确认计划/证据/取舍后继续（/resume 或给出指示）。" 
   })); 
