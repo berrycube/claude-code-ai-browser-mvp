@@ -1,3 +1,14 @@
+export interface PolicyActions {
+  deny_domains: string[];
+  ask_patterns: string[];
+  pause_keywords: string[];
+  snapshot_pdf_domains: string[];
+}
+
+export interface Policy {
+  actions: PolicyActions;
+}
+
 export interface SourceRecord {
   id?: string; 
   url?: string; 

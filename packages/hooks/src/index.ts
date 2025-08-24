@@ -1,12 +1,13 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { z } from "zod";
+import type { Policy } from "../../types/src/index.js";
 
 // Policy loading function
-export function loadPolicy() {
+export function loadPolicy(): Policy {
   try { 
     const p = path.join(process.cwd(), "config", "policy.json"); 
-    return JSON.parse(fs.readFileSync(p, "utf8")); 
+    return JSON.parse(fs.readFileSync(p, "utf8")) as Policy; 
   } catch { 
     return { 
       actions: { 

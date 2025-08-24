@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/*.ts --dts --format esm,cjs",
+    "build": "tsup src/index.ts --dts --format esm,cjs && tsup src/policy.ts src/pretool-guard.ts src/posttool-detect.ts src/stop-checkpoint.ts --format esm --no-dts",
     "dev": "tsx watch src/*.ts"
   },
   "devDependencies": {
