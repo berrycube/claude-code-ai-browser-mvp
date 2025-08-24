@@ -1,78 +1,96 @@
-# AI Browser Researcher — 集成增强版（Integrated Edition）
+# AI Browser Researcher — 集成增强版（Alpha）
 
-> 将 **第一版(MVP)** 与 **第二版(TypeScript/Monorepo/Node Hooks/状态机/Live Dashboard/SQLite 可选)**
-> **有机合并**：去重并保留两者优点；新增 **Qdrant 向量检索 MCP** 的最小配置与**记忆工作流**（/memorize、/remember）。
+> 基于Claude Code + MCP协议的AI研究工具，支持端到端研究工作流和斜线命令触发。
+> 当前处于**Alpha开发阶段**，核心工作流已可用。
 
-## 重要特性
-- **端到端研究工作流**：计划→检索→浏览→抽取→分析→审计→报告/仪表盘；关键节点**暂停请示人类**。
-- **双仪表盘**：
-  - 实时面板（SSE）：`packages/live-dashboard`（观察运行进度/暂停点）；
-  - 静态仪表盘（HTML）：`dashboard/generate_dashboard.js`（从 sources 汇总）。
-- **子代理 + Slash 命令**：Planner/Searcher/Browser/Extractor/Analyst/Critic/Writer/Facilitator/Dashboarder/Memory。
-- **记忆能力（Qdrant MCP）**：把研究结论/要点入库（/memorize），随时语义检索召回（/remember）。
-- **合规可控**：Node Hooks + 策略文件统一管理“允许/询问/暂停/拒绝”；默认**保守**。
+## 当前可用功能 ✅
+
+- **CLI命令系统**：完整的命令行工具和斜线命令支持
+- **基础工作流**：计划制定 → 搜索执行 → 报告生成（3个核心代理）
+- **Node Hooks控制**：策略文件管理访问控制和合规检查
+- **Live Dashboard服务**：实时面板基础架构（`packages/live-dashboard`）
+- **模板系统**：Handlebars模板渲染报告和仪表盘
+
+## 开发中功能 🔄
+
+- **完整代理系统**：7个额外代理（Browser/Extractor/Analyst/Critic/Facilitator/Dashboarder/Memory）
+- **向量记忆能力**：Qdrant集成的语义检索（/memorize、/remember）
+- **静态仪表盘生成**：数据可视化和汇总展示
+- **真实搜索API集成**：SerpApi/Brave Search替换模拟数据
 
 ## 快速开始
+
+### 基础安装
 ```bash
-# 1) 启用 pnpm & 安装依赖
-corepack enable || true
-corepack prepare pnpm@9.7.0 --activate || true
+# 安装依赖
 pnpm install
+
+# 构建项目  
 pnpm build
 
-# 验证构建成功
+# 验证安装
 pnpm lint
+```
 
-# 2) 接入必要 MCP（项目作用域）
-# 浏览器（Playwright）
-claude mcp add playwright npx @playwright/mcp@latest -- --browser chrome --caps pdf
-# 文件系统
+### 配置MCP服务（在Claude Code中）
+```bash
+# 必需：文件系统访问
 claude mcp add filesystem npx -y @modelcontextprotocol/server-filesystem -- "$PWD"
-# 自研研究工具（本仓 dist）
+
+# 必需：研究工具
 claude mcp add research-tools node packages/mcp-research-tools/dist/index.js
-# 可选：SerpApi 搜索
-# export SERPAPI_API_KEY=xxx
-# claude mcp add serpapi --env SERPAPI_API_KEY=$SERPAPI_API_KEY -- npx -y @ilyazub/serpapi-mcp-server
-# 可选：Brave Search（官方 MCP）
+
+# 可选：网页浏览
+claude mcp add playwright npx @playwright/mcp@latest -- --browser chrome --caps pdf
+
+# 可选：搜索API（需要API密钥）
 # claude mcp add brave-search npx -y @modelcontextprotocol/server-brave-search --env BRAVE_API_KEY=$BRAVE_API_KEY
-# 可选：Qdrant 记忆（向量检索）— 本地或云端
-# 本地（uvx 运行，使用本机 Qdrant DB 路径）
-# claude mcp add qdrant #   -e QDRANT_LOCAL_PATH="$PWD/workspace/qdrant" #   -e COLLECTION_NAME="research-memory" #   -e EMBEDDING_MODEL="sentence-transformers/all-MiniLM-L6-v2" #   -- uvx mcp-server-qdrant
-# 远端（QDRANT_URL + API KEY）
-# claude mcp add qdrant #   -e QDRANT_URL="https://<your-qdrant-host>:6333" #   -e QDRANT_API_KEY="<key>" #   -e COLLECTION_NAME="research-memory" #   -e EMBEDDING_MODEL="sentence-transformers/all-MiniLM-L6-v2" #   -- uvx mcp-server-qdrant
-
-# 3) （可选）启动 Live Dashboard
-pnpm --filter live-dashboard start  # http://localhost:7788
-
-# 4) 与 Claude 交互（在仓库根目录）：
-/research "你的主题" --langs=zh,en --depth=2 --since=2024-01-01
-/report --out=workspace/reports/$(date +%F)-主题.md
-/dashboard --out=workspace/reports/$(date +%F)-主题-dashboard.html
-/memorize "将当前研究结论入库（Qdrant）"
-/remember "查询：过去 90 天关于 {子主题} 的要点"
 ```
 
-> Qdrant MCP 依赖 `uvx` 运行器（Astral 工具链）或 Docker；若尚未安装，可参考官方说明。你也可使用托管 Qdrant 服务。
+### 使用工作流
+```bash
+# 方式1：直接使用pnpm命令
+pnpm research "AI发展趋势" --depth=2
 
-## 目录结构（关键）
+# 方式2：在Claude Code中使用斜线命令
+/research "AI发展趋势" --depth=2 --langs=zh,en
+/dashboard --out=workspace/reports/dashboard.html
+
+# 查看生成的报告
+ls workspace/reports/
 ```
-.
-├─ package.json / pnpm-workspace.yaml / tsconfig.base.json
-├─ .mcp.json                      # 统一 MCP 声明（含 qdrant / brave-search 可选）
-├─ .claude/
-│  ├─ settings.json               # Node Hooks（Pre/Post/Stop）+ permission ask
-│  ├─ agents/*                    # 包含 memory 子代理
-│  └─ commands/*                  # 包含 /memorize /remember
-├─ packages/
-│  ├─ mcp-research-tools/         # TypeScript MCP：抽取/规约/质量分/渲染/DB/状态机/日志
-│  ├─ hooks/                      # Node Hooks：策略评估 + 决策
-│  ├─ live-dashboard/             # SSE 实时面板
-│  └─ types/                      # 共享类型
-├─ templates/                     # report.md.hbs / dashboard.html.hbs
-├─ dashboard/generate_dashboard.js# 静态仪表盘生成器（兼容一版）
-├─ workspace/                     # sources/*.jsonl / reports/*.md / snapshots/* / runs/*
-├─ config/                        # policy.json / retention.json / sites.json / policies.md
-└─ scripts/                       # install_integrated.sh / check.sh
+
+### 启动实时仪表盘（可选）
+```bash
+pnpm start:live  # 访问 http://localhost:7788
+```
+
+## 项目架构
+
+```
+├─ src/                           # 核心工作流实现
+│  ├─ cli.ts                      # 命令行入口
+│  ├─ workflow/engine.ts          # 工作流引擎  
+│  └─ agents/                     # 代理实现
+│     ├─ base.ts                  # 代理基类
+│     ├─ planner.ts              # 计划制定代理
+│     ├─ searcher.ts             # 搜索执行代理
+│     └─ writer.ts               # 报告生成代理
+├─ packages/                      # TypeScript子包
+│  ├─ mcp-research-tools/         # MCP研究工具
+│  ├─ hooks/                      # Node Hooks策略控制  
+│  ├─ live-dashboard/             # 实时仪表盘
+│  └─ types/                      # 类型定义
+├─ .claude/                       # Claude Code配置
+│  ├─ settings.json               # Hooks配置和权限管理
+│  ├─ agents/*.md                 # 代理描述（10个）
+│  └─ commands/*.md               # 斜线命令定义
+├─ templates/                     # Handlebars模板
+├─ workspace/                     # 工作区数据（被ignore）
+│  ├─ reports/*.md                # 生成的研究报告
+│  ├─ sources/*.jsonl             # 搜索数据
+│  └─ snapshots/                  # 页面快照
+└─ config/policy.json             # 访问策略配置
 ```
 
 ## 合规与边界

@@ -1,59 +1,88 @@
-# AI Browser Researcher 项目说明
+# AI Browser Researcher 开发指南
 
-## 项目概述
-集成增强版AI浏览器研究工具，将MVP版与TypeScript/Monorepo/Node Hooks/状态机/Live Dashboard/SQLite功能有机合并。
+## 当前实现状态
 
-## 核心特性
-- **端到端研究工作流**：计划→检索→浏览→抽取→分析→审计→报告/仪表盘
-- **双仪表盘系统**：
-  - 实时面板（SSE）：`packages/live-dashboard`
-  - 静态仪表盘：`dashboard/generate_dashboard.js`
-- **10个子代理**：Planner/Searcher/Browser/Extractor/Analyst/Critic/Writer/Facilitator/Dashboarder/Memory
-- **记忆能力**：Qdrant向量数据库支持语义检索
-- **合规控制**：Node Hooks + 策略文件统一管理
+### ✅ 已完成
+- CLI命令系统（src/cli.ts）
+- 工作流引擎（src/workflow/engine.ts）
+- 3个核心代理：Planner、Searcher、Writer
+- Node Hooks策略控制
+- TypeScript monorepo架构
 
-## 项目架构
-```
-packages/
-├─ mcp-research-tools/     # TypeScript MCP核心工具
-├─ hooks/                  # Node Hooks策略控制
-├─ live-dashboard/         # SSE实时面板
-└─ types/                  # 共享类型定义
+### 🔄 开发中  
+- 7个额外代理实现
+- Qdrant向量存储集成
+- 静态仪表盘生成逻辑
+- 真实搜索API替换模拟数据
 
-workspace/                 # 数据存储
-├─ sources/               # 检索数据(.jsonl)
-├─ reports/               # 生成报告(.md)
-├─ snapshots/             # 页面快照
-└─ runs/                  # 运行记录
+## 技术债务跟踪
 
-config/                    # 配置文件
-├─ policy.json            # 访问策略
-├─ retention.json         # 数据保留
-└─ sites.json             # 站点配置
-```
+### 高优先级 (P0)
+- [ ] 实现Browser和Extractor代理（网页内容抓取）
+- [ ] 完成Analyst和Critic代理（内容分析和审计）
+- [ ] 集成真实搜索API（SerpApi/Brave Search）
 
-## 工作流程
-1. `/research "主题" --langs=zh,en --depth=2 --since=2024-01-01`
-2. `/report --out=workspace/reports/$(date +%F)-主题.md`
-3. `/dashboard --out=workspace/reports/$(date +%F)-主题-dashboard.html`
-4. `/memorize "研究结论入库"`
-5. `/remember "查询历史研究"`
+### 中优先级 (P1)
+- [ ] 实现/memorize和/remember命令的后端逻辑
+- [ ] 添加Qdrant向量数据库集成
+- [ ] 完善错误处理和重试机制
 
-## 依赖要求
-- pnpm 9.7.0+
-- Node.js (TypeScript构建)
-- Chrome浏览器 (Playwright)
-- 可选：Qdrant向量数据库
-- 可选：SerpApi或Brave Search API
+### 低优先级 (P2)
+- [ ] 实现Facilitator和Dashboarder代理
+- [ ] 静态仪表盘生成器完善
+- [ ] 性能优化和并发控制
 
-## 合规边界
-- 遵守robots.txt和站点ToS
-- 不绕过付费墙/风控/验证码
-- 所有报告附带来源/时间戳/快照
-- 敏感信息不记录到日志
+## 开发规范
 
-## 开发模式
+### 代码组织
 - 所有命令在项目根目录执行
 - 使用pnpm workspace管理多包
-- TypeScript严格模式
-- Git工作流管理
+- TypeScript严格模式，完整类型定义
+- Git特性分支工作流
+
+### 代理开发模式
+```typescript
+// 新代理实现模板
+export class NewAgent extends Agent {
+  name = 'NewAgent';
+  description = '代理功能描述';
+  
+  async execute(input: any): Promise<any> {
+    // 实现代理逻辑
+    this.log('代理执行中...');
+    await this.saveProgress(result);
+    return result;
+  }
+}
+```
+
+### 工作流扩展
+在 `src/workflow/engine.ts` 中添加新的工作流步骤：
+```typescript
+// 4. 新步骤
+const newResult = await this.agents.get('newagent')!.execute({
+  previousResult,
+  options
+});
+```
+
+### MCP工具集成
+新MCP工具需要在 `.mcp.json` 中声明，并在代理中通过 `callMCP()` 调用。
+
+## 合规要求
+- 遵守robots.txt和站点ToS
+- 不绕过付费墙/风控系统
+- 所有数据附带来源和时间戳
+- 敏感信息不写入日志
+
+## 测试和验证
+```bash
+# 构建检查
+pnpm build && pnpm type-check
+
+# 功能测试
+pnpm research "测试主题" --depth=1
+
+# 查看生成结果
+ls workspace/reports/
+```
