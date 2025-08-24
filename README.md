@@ -14,11 +14,14 @@
 
 ## 快速开始
 ```bash
-# 1) 启用 pnpm & 安装
+# 1) 启用 pnpm & 安装依赖
 corepack enable || true
 corepack prepare pnpm@9.7.0 --activate || true
 pnpm install
-pnpm -r build
+pnpm build
+
+# 验证构建成功
+pnpm lint
 
 # 2) 接入必要 MCP（项目作用域）
 # 浏览器（Playwright）
