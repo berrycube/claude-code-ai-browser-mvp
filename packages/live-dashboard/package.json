@@ -5,9 +5,12 @@
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
   "scripts": {
-    "build": "tsup src/server.ts --format esm,cjs",
+    "build": "tsup src/server.ts --dts --format esm,cjs",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.14.0"
+  }
 }

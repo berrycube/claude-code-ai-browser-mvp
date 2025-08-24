@@ -8,6 +8,7 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "start:live": "pnpm --filter live-dashboard start",
+    "type-check": "pnpm -r exec tsc --noEmit",
     "lint": "eslint ."
   },
   "devDependencies": {

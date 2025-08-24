@@ -37,7 +37,11 @@ importers:
         specifier: ^20.14.0
         version: 20.19.11
 
-  packages/live-dashboard: {}
+  packages/live-dashboard:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.14.0
+        version: 20.19.11
 
   packages/mcp-research-tools:
     dependencies:
@@ -67,6 +71,9 @@ importers:
         specifier: ^9.4.0
         version: 9.6.0
     devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.11
+        version: 7.6.13
       '@types/jsdom':
         specifier: ^21.1.7
         version: 21.1.7
@@ -586,6 +593,9 @@ packages:
     resolution: {integrity: sha512-CpKnYa8eHthJa3c+C38v/E+/KZyF1Jdh2Cz3DyKZqEWYgrM1IHFArXNWvBLPQCKUEsAqqKX27tTqVEFbDNUcOA==}
     cpu: [x64]
     os: [win32]
+
+  '@types/better-sqlite3@7.6.13':
+    resolution: {integrity: sha512-NMv9ASNARoKksWtsq/SHakpYAYnhBrQgGD8zkLYk/jaK8jUGn08CfEdTRgYhMypUQAfzSP8W6gNLe0q19/t4VA==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -2302,6 +2312,10 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.47.1':
     optional: true
+
+  '@types/better-sqlite3@7.6.13':
+    dependencies:
+      '@types/node': 20.19.11
 
   '@types/estree@1.0.8': {}
 
