@@ -28,7 +28,17 @@ const PreToolInput = z.object({
 
 export async function executePreToolGuard(): Promise<void> {
   const raw = await readStdinInput();
-  const data = PreToolInput.safeParse(JSON.parse(raw||"{}")); 
+  let parsedData: any;
+  try {
+    parsedData = JSON.parse(raw||"{}");
+  } catch {
+    // Note: console.log is intentional - MCP protocol output
+    return console.log(JSON.stringify({ 
+      permissionDecision:"ask", 
+      reason:"bad input" 
+    }));
+  }
+  const data = PreToolInput.safeParse(parsedData); 
   const policy = loadPolicy();
   
   if (!data.success) {
@@ -76,7 +86,14 @@ const PostToolInput = z.object({
 
 export async function executePostToolDetect(): Promise<void> {
   const raw = await readStdinInput();
-  const data = PostToolInput.safeParse(JSON.parse(raw||"{}")); 
+  let parsedData: any;
+  try {
+    parsedData = JSON.parse(raw||"{}");
+  } catch {
+    // Note: console.log is intentional - MCP protocol output
+    return console.log(JSON.stringify({ decision:"ok" }));
+  }
+  const data = PostToolInput.safeParse(parsedData); 
   const policy = loadPolicy();
   const combined = (data.success && (data.data.html || data.data.text) || "").toLowerCase();
   const pause: string[] = policy.actions?.pause_keywords || [];

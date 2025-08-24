@@ -6,9 +6,13 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs && tsup src/policy.ts src/pretool-guard.ts src/posttool-detect.ts src/stop-checkpoint.ts --format esm --no-dts",
-    "dev": "tsx watch src/*.ts"
+    "dev": "tsx watch src/*.ts",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0"
+    "@types/node": "^20.14.0",
+    "@vitest/ui": "^3.2.4",
+    "vitest": "^3.2.4"
   }
 }
