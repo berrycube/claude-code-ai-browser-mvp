@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { HonestResearchWorkflow } from '../workflow/honest-engine.js';
+import { HonestResearchWorkflow } from '../workflow/engine.js';
 import type { ResearchOptions } from '../../packages/types/src/index.js';
 
 describe('诚实MVP工作流集成测试', () => {
