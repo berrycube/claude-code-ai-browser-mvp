@@ -1,8 +1,6 @@
 import { Agent } from '../agents/base.js';
 import { PlannerAgent } from '../agents/planner.js';
 import { SearcherAgent } from '../agents/searcher.js';
-import { BrowserAgent } from '../agents/browser.js';
-import { ExtractorAgent } from '../agents/extractor.js';
 import { WriterAgent } from '../agents/writer.js';
 import type { ResearchOptions, WorkflowResult } from '../../packages/types/src/index.js';
 
@@ -13,8 +11,6 @@ export class ResearchWorkflow {
     options: ResearchOptions;
     plan?: any;
     sources?: any[];
-    browsedContent?: any[];
-    extractedData?: any[];
     analysis?: any;
     reportPath?: string;
   };
@@ -23,8 +19,6 @@ export class ResearchWorkflow {
     this.agents = new Map();
     this.agents.set('planner', new PlannerAgent());
     this.agents.set('searcher', new SearcherAgent());
-    this.agents.set('browser', new BrowserAgent());
-    this.agents.set('extractor', new ExtractorAgent());
     this.agents.set('writer', new WriterAgent());
     
     this.state = {
@@ -58,43 +52,12 @@ export class ResearchWorkflow {
       }, '搜索执行');
       console.log(`✅ 搜索完成: ${this.state.sources.length}个来源`);
 
-      // 3. 浏览阶段（可以部分失败）
-      console.log(`🌐 步骤3: 浏览网页内容...`);
-      try {
-        this.state.browsedContent = await this.agents.get('browser')!.execute({
-          sources: this.state.sources,
-          options
-        });
-        console.log(`✅ 浏览完成: ${this.state.browsedContent.length}个页面`);
-      } catch (error) {
-        console.warn(`⚠️ 浏览阶段部分失败，使用搜索结果继续: ${error}`);
-        this.state.browsedContent = this.state.sources.map(source => ({
-          ...source,
-          status: 'skipped',
-          page_content: { title: source.title, html_content: source.snippet }
-        }));
-      }
-
-      // 4. 内容抽取阶段（可以部分失败）
-      console.log(`📄 步骤4: 抽取结构化内容...`);
-      try {
-        this.state.extractedData = await this.agents.get('extractor')!.execute({
-          browsedContent: this.state.browsedContent,
-          options
-        });
-        console.log(`✅ 抽取完成: ${this.state.extractedData.length}条数据`);
-      } catch (error) {
-        console.warn(`⚠️ 抽取阶段失败，使用原始搜索数据: ${error}`);
-        this.state.extractedData = this.state.sources;
-      }
-
-      // 5. 报告生成阶段（必须成功）
-      console.log(`📝 步骤5: 生成研究报告...`);
+      // 3. 报告生成阶段（Legacy 3-step workflow）
+      console.log(`📝 步骤3: 生成研究报告...`);
       const reportResult = await this.executeWithRetry('writer', {
         topic,
         plan: this.state.plan,
         sources: this.state.sources,
-        extractedData: this.state.extractedData || this.state.sources,
         options
       }, '报告生成');
       

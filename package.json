@@ -9,18 +9,13 @@
   },
   "scripts": {
     "build": "pnpm -r build && tsup src/cli.ts --format esm --outDir dist",
-    "build:honest": "tsup src/cli-honest.ts --format esm --outDir dist --outExtension:.js=.honest.js",
     "dev": "pnpm -r dev",
     "start:live": "pnpm --filter live-dashboard start",
     "type-check": "pnpm -r exec tsc --noEmit",
     "lint": "eslint .",
     "research": "tsx src/cli.ts research",
-    "research:honest": "tsx src/cli-honest.ts research",
-    "research:compare": "tsx src/cli-honest.ts compare",
-    "research:metrics": "tsx src/cli-honest.ts metrics",
-    "dashboard": "tsx src/cli.ts dashboard",
-    "memorize": "tsx src/cli.ts memorize",
-    "remember": "tsx src/cli.ts remember"
+    "research:legacy": "tsx src/cli.ts research:legacy",
+    "dashboard": "tsx src/cli.ts dashboard"
   },
   "dependencies": {
     "commander": "^12.1.0"
