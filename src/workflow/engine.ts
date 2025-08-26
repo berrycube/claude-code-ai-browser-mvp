@@ -185,40 +185,58 @@ export class HonestResearchWorkflow {
    * 直接调用Playwright MCP获取页面内容
    */
   private async fetchPageContent(url: string): Promise<any> {
-    // TODO: 实现真实的MCP调用
-    // const result = await this.callMCP('playwright', 'navigate', { url });
-    
-    // 临时：返回基础结构，表明这是真实调用的框架
-    return {
-      url,
-      title: `真实页面标题 - ${url.split('/').pop()}`,
-      html: `<!-- 这里应该是真实的HTML内容，通过Playwright MCP获取 -->`,
-      timestamp: new Date().toISOString(),
-      mcp_call: 'playwright.navigate', // 标记这是MCP调用
-      status: 'mocked_pending_mcp_integration'
-    };
+    try {
+      // 动态创建MCP客户端以支持运行时环境变量变更
+      const { createMCPClient } = await import('../mcp/client.js');
+      const mcpClient = createMCPClient();
+      const result = await mcpClient.call('playwright', 'navigate', { url });
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Playwright调用失败');
+      }
+      
+      return {
+        url,
+        title: result.data.title || `页面 - ${url.split('/').pop()}`,
+        html: result.data.html || '<!-- MCP调用返回的HTML内容 -->',
+        timestamp: new Date().toISOString(),
+        mcp_call: 'playwright.navigate',
+        status: result.data.mocked ? 'mocked_response' : 'real_response'
+      };
+    } catch (error) {
+      throw new Error(`页面内容获取失败 (${url}): ${error}`);
+    }
   }
   
   /**
    * 直接调用research-tools MCP进行内容提取
    */
   private async extractReadableContent(pageContent: any, url: string): Promise<any> {
-    // TODO: 实现真实的MCP调用
-    // const result = await this.callMCP('research-tools', 'extract_readable', { 
-    //   html: pageContent.html, 
-    //   url: url 
-    // });
-    
-    // 临时：返回基础结构，表明这是真实调用的框架
-    return {
-      title: pageContent.title,
-      content_text: `这里应该是通过research-tools MCP提取的可读内容`,
-      length: 500,
-      url: url,
-      extracted_at: new Date().toISOString(),
-      mcp_call: 'research-tools.extract_readable', // 标记这是MCP调用
-      status: 'mocked_pending_mcp_integration'
-    };
+    try {
+      // 动态创建MCP客户端以支持运行时环境变量变更
+      const { createMCPClient } = await import('../mcp/client.js');
+      const mcpClient = createMCPClient();
+      const result = await mcpClient.call('research-tools', 'extract_readable', { 
+        html: pageContent.html, 
+        url: url 
+      });
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Research-tools调用失败');
+      }
+      
+      return {
+        title: result.data.title || pageContent.title,
+        content_text: result.data.content_text || '提取的内容文本',
+        length: result.data.length || 0,
+        url: url,
+        extracted_at: new Date().toISOString(),
+        mcp_call: 'research-tools.extract_readable',
+        status: result.data.mocked ? 'mocked_response' : 'real_response'
+      };
+    } catch (error) {
+      throw new Error(`内容提取失败 (${url}): ${error}`);
+    }
   }
   
   private sleep(ms: number): Promise<void> {

@@ -14,8 +14,17 @@ export abstract class Agent {
   }
   
   protected async callMCP(server: string, tool: string, params: any): Promise<any> {
-    // TODO: 实现MCP工具调用
     this.log(`调用MCP: ${server}.${tool}`);
-    throw new Error('MCP调用未实现');
+    
+    // 动态创建MCP客户端以支持运行时环境变量变更
+    const { createMCPClient } = await import('../mcp/client.js');
+    const client = createMCPClient();
+    const result = await client.call(server, tool, params);
+    
+    if (!result.success) {
+      throw new Error(`MCP调用失败: ${result.error}`);
+    }
+    
+    return result.data;
   }
 }
