@@ -73,8 +73,9 @@ export class ProductionMCPClient implements MCPClient {
       // TODO: 实现真实的MCP协议调用
       // 这里应该调用实际的MCP服务器
       
-      // 当前为演示目的，检查环境变量来决定是否有真实配置
-      if (this.hasRealConfig(server)) {
+      // 检查配置状态并提供友好错误信息
+      const configStatus = this.getConfigStatus(server);
+      if (configStatus.hasConfig) {
         // 模拟真实调用的结果结构
         const realResult = await this.simulateRealCall(server, tool, params);
         return {
@@ -86,7 +87,7 @@ export class ProductionMCPClient implements MCPClient {
           mode: 'real'
         };
       } else {
-        throw new Error(`${server} 服务未配置真实API密钥或端点`);
+        throw new Error(configStatus.errorHint || `${server} 服务未配置真实API密钥或端点`);
       }
     } catch (error) {
       return {
@@ -144,14 +145,58 @@ export class ProductionMCPClient implements MCPClient {
   private hasRealConfig(server: string): boolean {
     switch (server) {
       case 'brave-search':
-        return !!process.env.BRAVE_API_KEY;
+        const braveKey = process.env.BRAVE_API_KEY;
+        if (!braveKey) return false;
+        // 基本格式验证：Brave API密钥通常以BSA开头
+        return braveKey.length >= 20 && /^[A-Za-z0-9_-]+$/.test(braveKey);
       case 'serpapi':
-        return !!process.env.SERPAPI_API_KEY;
+        const serpKey = process.env.SERPAPI_API_KEY;
+        if (!serpKey) return false;
+        // 基本格式验证：SerpApi密钥格式检查
+        return serpKey.length >= 30 && /^[A-Za-z0-9_-]+$/.test(serpKey);
       case 'research-tools':
       case 'filesystem':
         return true; // 本地服务，不需要API密钥
       default:
         return false;
+    }
+  }
+
+  /**
+   * 获取配置状态和友好的错误提示
+   */
+  private getConfigStatus(server: string): { hasConfig: boolean; errorHint?: string } {
+    switch (server) {
+      case 'brave-search':
+        if (!process.env.BRAVE_API_KEY) {
+          return {
+            hasConfig: false,
+            errorHint: '请设置环境变量 BRAVE_API_KEY。获取方法：https://brave.com/search/api/'
+          };
+        }
+        if (!this.hasRealConfig(server)) {
+          return {
+            hasConfig: false,
+            errorHint: 'BRAVE_API_KEY 格式无效。请检查密钥是否正确复制。'
+          };
+        }
+        return { hasConfig: true };
+      case 'serpapi':
+        if (!process.env.SERPAPI_API_KEY) {
+          return {
+            hasConfig: false,
+            errorHint: '请设置环境变量 SERPAPI_API_KEY。获取方法：https://serpapi.com/'
+          };
+        }
+        if (!this.hasRealConfig(server)) {
+          return {
+            hasConfig: false,
+            errorHint: 'SERPAPI_API_KEY 格式无效。请检查密钥是否正确复制。'
+          };
+        }
+        return { hasConfig: true };
+      default:
+        return { hasConfig: this.hasRealConfig(server) };
     }
   }
 

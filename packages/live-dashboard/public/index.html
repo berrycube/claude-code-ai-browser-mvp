@@ -1,7 +1,0 @@
-<!doctype html>
-<html lang="zh">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Research Live Dashboard</title>
-<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:24px}h1{margin-bottom:8px}#log{white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:12px;height:50vh;overflow:auto}.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#f3f3f3;margin-right:6px}</style></head>
-<body><h1>Live Dashboard</h1><p>监听 <code>workspace/</code> 文件变化，展示进度推送（SSE）。</p><div id="log"></div>
-<script>const log=document.getElementById('log');const es=new EventSource('/events');es.onmessage=e=>{const j=JSON.parse(e.data);const line=`[${new Date().toLocaleTimeString()}] ${j.type} :: ${j.file||''}`;log.textContent=line+"\n"+log.textContent};es.onerror=()=>{log.textContent="[error] SSE 断开，尝试刷新页面..."+"\n"+log.textContent};</script>
-</body></html>

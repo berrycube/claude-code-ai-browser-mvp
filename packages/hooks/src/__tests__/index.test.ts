@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { loadPolicy, executePreToolGuard, executePostToolDetect, executeStopCheckpoint } from '../index.js';
-import type { Policy } from '../../../types/src/index.js';
+import type { Policy } from '../../../../src/types/index.js';
 import { Readable } from 'stream';
 
 vi.mock('fs');

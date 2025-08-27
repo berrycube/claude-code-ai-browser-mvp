@@ -1,7 +1,7 @@
 import { PlannerAgent } from '../agents/planner.js';
 import { SearcherAgent } from '../agents/searcher.js';
 import { WriterAgent } from '../agents/writer.js';
-import type { ResearchOptions, WorkflowResult } from '../../packages/types/src/index.js';
+import type { ResearchOptions, WorkflowResult } from '../types/index.js';
 
 /**
  * 诚实的MVP工作流引擎

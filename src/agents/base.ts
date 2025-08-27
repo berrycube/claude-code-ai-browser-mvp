@@ -9,8 +9,32 @@ export abstract class Agent {
   }
   
   protected async saveProgress(data: any, filename?: string): Promise<void> {
-    // TODO: 实现进度保存到workspace/runs/
-    this.log(`保存进度: ${filename || 'progress.json'}`);
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      // 确保工作区目录存在
+      const workspaceDir = path.join(process.cwd(), 'workspace', 'runs');
+      await fs.mkdir(workspaceDir, { recursive: true });
+      
+      // 生成唯一文件名
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const finalFilename = filename || `${this.name.toLowerCase()}-progress-${timestamp}.json`;
+      const filePath = path.join(workspaceDir, finalFilename);
+      
+      // 保存数据，包含元数据
+      const progressData = {
+        agent: this.name,
+        timestamp: new Date().toISOString(),
+        data,
+        filename: finalFilename
+      };
+      
+      await fs.writeFile(filePath, JSON.stringify(progressData, null, 2), 'utf-8');
+      this.log(`保存进度: ${filePath}`);
+    } catch (error) {
+      this.log(`保存进度失败: ${error}`);
+    }
   }
   
   protected async callMCP(server: string, tool: string, params: any): Promise<any> {

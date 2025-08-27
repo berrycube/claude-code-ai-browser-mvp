@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { SearcherAgent } from '../agents/searcher.js';
 import { HonestResearchWorkflow } from '../workflow/engine.js';
 import { calculateRelevance, validateSearchQuality, validateSearchRanking } from '../utils/relevance.js';
-import type { ResearchOptions } from '../../packages/types/src/index.js';
+import type { ResearchOptions } from '../types/index.js';
 import type { SearchResult } from '../utils/relevance.js';
 
 describe('业务逻辑验证测试 - 真正的功能测试', () => {

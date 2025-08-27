@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { ProductionMCPClient } from '../mcp/client.js';
 import { HonestResearchWorkflow } from '../workflow/engine.js';
 import { validateSearchQuality } from '../utils/relevance.js';
-import type { ResearchOptions } from '../../packages/types/src/index.js';
+import type { ResearchOptions } from '../types/index.js';
 
 /**
  * 端到端集成测试 - 测试真实API集成能力
@@ -60,7 +60,7 @@ describe('端到端API集成测试', () => {
       } else {
         // 没有API密钥时，应该返回配置错误
         expect(result.success).toBe(false);
-        expect(result.error).toContain('未配置');
+        expect(result.error).toContain('请设置环境变量');
       }
     });
 

@@ -15,7 +15,20 @@ export interface SearchResult {
  * 这是真正的业务逻辑验证
  */
 export function calculateRelevance(result: SearchResult, query: string): number {
+  // 输入验证
+  if (!result || !query || typeof query !== 'string' || query.trim().length === 0) {
+    return 0;
+  }
+
+  // 基本结果验证
+  if (!result.title && !result.snippet && !result.url) {
+    return 0;
+  }
+
   const queryTerms = extractKeyTerms(query);
+  if (queryTerms.length === 0) {
+    return 0;
+  }
   
   // 权重配置
   const weights = {
@@ -36,7 +49,8 @@ export function calculateRelevance(result: SearchResult, query: string): number 
     urlScore * weights.url
   );
   
-  return Math.min(totalScore, 1.0); // 确保不超过1
+  // 确保返回值在有效范围内
+  return Math.max(0, Math.min(totalScore, 1.0));
 }
 
 /**
