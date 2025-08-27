@@ -6,7 +6,7 @@ type BetterSqlite3Constructor = any;
 
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
-import type { SourceRecord } from "../../types/src/index.js";
+import type { SourceRecord } from "../../../src/types/index.js";
 
 let dbOk = false; 
 let db: BetterSqlite3Database | null = null;

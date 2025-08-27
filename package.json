@@ -10,7 +10,6 @@
   "scripts": {
     "build": "pnpm -r build && tsup src/cli.ts --format esm --outDir dist",
     "dev": "pnpm -r dev",
-    "start:live": "pnpm --filter live-dashboard start",
     "type-check": "pnpm -r exec tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",

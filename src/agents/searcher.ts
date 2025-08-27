@@ -31,6 +31,8 @@ export class SearcherAgent extends Agent {
   }
   
   private async performSearch(query: string, options: any): Promise<any[]> {
+    let lastError: Error | null = null;
+    
     // 尝试使用真实的搜索API
     try {
       // 优先使用Brave Search MCP（如果已配置）
@@ -40,6 +42,7 @@ export class SearcherAgent extends Agent {
       }
     } catch (error) {
       this.log(`Brave Search失败: ${error}`);
+      lastError = error as Error;
     }
 
     try {
@@ -50,38 +53,61 @@ export class SearcherAgent extends Agent {
       }
     } catch (error) {
       this.log(`SerpApi搜索失败: ${error}`);
+      lastError = error as Error;
     }
 
-    // 降级到模拟数据
-    this.log(`使用模拟搜索数据: ${query}`);
-    return [
-      {
-        id: `search-${Date.now()}-${Math.random()}`,
-        url: `https://example.com/article-${Math.floor(Math.random() * 1000)}`,
-        title: `关于${query}的研究文章`,
-        snippet: `这是一篇关于${query}的详细分析文章，涵盖了相关的技术发展和应用场景。`,
-        published_at: new Date(Date.now() - Math.random() * 365 * 24 * 3600 * 1000).toISOString(),
-        source: 'mock_search',
-        lang: query.match(/[一-龥]/) ? 'zh' : 'en',
-        relevance_score: Math.random() * 0.4 + 0.6 // 0.6-1.0
-      }
-    ];
+    // 诚实地报告失败，不再降级到假数据
+    throw new Error(`所有搜索API都不可用。请配置至少一个搜索服务 (Brave Search或SerpApi)。最后一个错误: ${lastError?.message || '未知错误'}`);
   }
 
   private async searchWithBrave(query: string): Promise<any[]> {
-    // TODO: 实际调用Brave Search MCP
-    // await this.callMCP('brave-search', 'brave_web_search', { query });
-    
-    // 模拟调用失败，降级到模拟数据
-    throw new Error('Brave Search MCP未配置或不可用');
+    try {
+      const result = await this.callMCP('brave-search', 'brave_web_search', { query });
+      
+      // 转换MCP响应为标准格式
+      if (result.results && Array.isArray(result.results)) {
+        return result.results.map((item: any) => ({
+          id: `brave-${Date.now()}-${Math.random()}`,
+          url: item.url,
+          title: item.title,
+          snippet: item.snippet || item.description || '',
+          published_at: item.published_at || new Date().toISOString(),
+          source: 'brave_search',
+          lang: query.match(/[一-龥]/) ? 'zh' : 'en',
+          relevance_score: Math.random() * 0.4 + 0.6 // 0.6-1.0
+        }));
+      }
+      
+      return [];
+    } catch (error) {
+      // 真实的错误处理，而不是假数据降级
+      throw new Error(`Brave Search调用失败: ${error}`);
+    }
   }
 
   private async searchWithSerp(query: string): Promise<any[]> {
-    // TODO: 实际调用SerpApi MCP
-    // await this.callMCP('serpapi', 'search', { query });
-    
-    // 模拟调用失败，降级到模拟数据
-    throw new Error('SerpApi MCP未配置或不可用');
+    try {
+      const result = await this.callMCP('serpapi', 'search', { query });
+      
+      // 转换SerpApi响应为标准格式
+      if (result.organic_results && Array.isArray(result.organic_results)) {
+        return result.organic_results.map((item: any) => ({
+          id: `serp-${Date.now()}-${Math.random()}`,
+          url: item.link,
+          title: item.title,
+          snippet: item.snippet || '',
+          published_at: item.date || new Date().toISOString(),
+          source: 'serpapi',
+          lang: query.match(/[一-龥]/) ? 'zh' : 'en',
+          relevance_score: Math.random() * 0.4 + 0.6 // 0.6-1.0
+        }));
+      }
+      
+      return [];
+    } catch (error) {
+      // 真实的错误处理，而不是假数据降级
+      throw new Error(`SerpApi调用失败: ${error}`);
+    }
   }
   
   private deduplicateAndRank(sources: any[]): any[] {
